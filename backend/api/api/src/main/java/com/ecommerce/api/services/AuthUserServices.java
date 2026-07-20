@@ -12,6 +12,10 @@ import com.ecommerce.api.repositories.UsersRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,7 +67,11 @@ public class AuthUserServices {
         newUser.setAuthUser(savedAuth);
         
         userRepository.save(newUser);
-
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Coordinate coordinate = new Coordinate(user.getLongitud(), user.getLatitud());
+        Point userLocation = geometryFactory.createPoint(coordinate);
+        newUser.setLocation(userLocation);
+        userRepository.save(newUser);
         return "Usuario registrado con exito";
     }
 

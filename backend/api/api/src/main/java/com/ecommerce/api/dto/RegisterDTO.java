@@ -16,4 +16,6 @@ public class RegisterDTO {
     private String rut;
     private String address;
     private String phone;
+    private double latitud;
+    private double longitud;
 }
