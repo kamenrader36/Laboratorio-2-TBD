@@ -65,8 +65,7 @@ public class AuthUserServices {
         newUser.setAddress(user.getAddress());
         newUser.setPhone(user.getPhone());
         newUser.setAuthUser(savedAuth);
-        
-        userRepository.save(newUser);
+
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Coordinate coordinate = new Coordinate(user.getLongitud(), user.getLatitud());
         Point userLocation = geometryFactory.createPoint(coordinate);

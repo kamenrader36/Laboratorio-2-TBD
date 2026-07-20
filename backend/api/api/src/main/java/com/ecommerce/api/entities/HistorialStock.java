@@ -32,4 +32,8 @@ public class HistorialStock {
     @ManyToOne
     @JoinColumn(name = "id_product")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "id_store")
+    private Store store;
 }
