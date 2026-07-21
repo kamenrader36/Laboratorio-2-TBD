@@ -51,8 +51,8 @@ BEGIN
     WHERE id_user = NEW.id_user;
 
     SELECT ST_Contains(area, c_address) INTO c_is_inside
-    FROM coverage_areas
-    WHERE id_area = 1;
+    FROM coberture_area
+    WHERE id_coberture = 1;
 
     IF c_is_inside IS FALSE OR c_is_inside IS NULL THEN
         RAISE EXCEPTION 'Operacion denegada: La dirección del usuario se encuentra fuera del área de cobertura (Usuario: %)', NEW.id_user;
@@ -66,6 +66,48 @@ CREATE TRIGGER trigger_coberture_area
     BEFORE INSERT ON payments
     FOR EACH ROW
 EXECUTE FUNCTION check_client_adress_in_coberture();
+
+
+
+--- Trigger: Prevents a product in the “hazardous” category from being added to the cart
+
+CREATE OR REPLACE FUNCTION check_hazardous_category_exclusion_zone()
+    RETURNS TRIGGER AS $$
+DECLARE
+v_is_hazardous   BOOLEAN;
+    v_client_location GEOMETRY(Point, 4326);
+    v_in_protected_zone BOOLEAN;
+BEGIN
+SELECT c.is_hazardous INTO v_is_hazardous
+FROM products p
+         JOIN categories c ON c.id_category = p.id_category
+WHERE p.id_product = NEW.id_product;
+
+IF v_is_hazardous IS NOT TRUE THEN
+        RETURN NEW;
+END IF;
+
+SELECT u.location INTO v_client_location
+FROM shopping_cart sc
+         JOIN users u ON u.id_user = sc.id_user
+WHERE sc.id_shopping_cart = NEW.id_shopping_cart;
+
+SELECT EXISTS (
+    SELECT 1 FROM protected_zone pz WHERE ST_Contains(pz.area, v_client_location)
+) INTO v_in_protected_zone;
+
+IF v_in_protected_zone THEN
+        RAISE EXCEPTION 'Venta denegada: el producto % pertenece a una categoría peligrosa y la dirección del cliente está dentro de una Zona Residencial Protegida.', NEW.id_product;
+END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_hazardous_exclusion_zone
+    BEFORE INSERT ON cart_detail
+    FOR EACH ROW
+    EXECUTE FUNCTION check_hazardous_category_exclusion_zone();
 
 --- Vista materializada de "ventas mensuales por categorias de productos"
 CREATE MATERIALIZED VIEW monthly_sales_by_product_category AS
@@ -84,6 +126,24 @@ GROUP BY
     c.id_category,
     c.category_name
 ORDER BY month, total_sales_amount DESC;
+
+--- Vista materializada: Sales volume grouped by municipality, using ST_Union
+
+CREATE MATERIALIZED VIEW sales_by_comuna AS
+SELECT cz.id_comuna,
+       cz.comuna_name,
+       COUNT(DISTINCT p.id_payment)      AS total_orders,
+       SUM(dp.quantity)                  AS total_units_sold,
+       SUM(dp.subtotal)                  AS total_sales_amount,
+       ST_Union(u.location)              AS clients_geom
+FROM payments p
+         JOIN users u ON u.id_user = p.id_user
+         JOIN detail_payment dp ON dp.id_payment = p.id_payment
+         JOIN comuna_zone cz ON ST_Contains(cz.area, u.location)
+WHERE p.status = 'APPROVED'
+GROUP BY cz.id_comuna, cz.comuna_name
+ORDER BY total_sales_amount DESC;
+
 
 --- Procedure: checkout_cart
 CREATE OR REPLACE PROCEDURE checkout_cart(
