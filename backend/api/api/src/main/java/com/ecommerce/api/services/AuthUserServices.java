@@ -6,12 +6,14 @@ import com.ecommerce.api.dto.ProfileDTO;
 import com.ecommerce.api.dto.RegisterDTO;
 import com.ecommerce.api.entities.AuthUser;
 import com.ecommerce.api.entities.Users;
+import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.AuthUserRepository;
 import com.ecommerce.api.repositories.UsersRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ecommerce.api.repositories.WarehouseRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -29,6 +31,8 @@ public class AuthUserServices {
     private UsersRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private WarehouseRepository warehouseRepository;
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -70,7 +74,15 @@ public class AuthUserServices {
         Coordinate coordinate = new Coordinate(user.getLongitud(), user.getLatitud());
         Point userLocation = geometryFactory.createPoint(coordinate);
         newUser.setLocation(userLocation);
-        userRepository.save(newUser);
+
+        Users savedUser = userRepository.save(newUser);
+        Warehouse initialWarehouse = new Warehouse();
+        String warehouseName = savedUser.getName() + " - Casa Matriz";
+        initialWarehouse.setName(warehouseName);
+        initialWarehouse.setAddress(savedUser.getAddress());
+        initialWarehouse.setLocation(userLocation);
+        initialWarehouse.setUser(savedUser);
+        warehouseRepository.save(initialWarehouse);
         return "Usuario registrado con exito";
     }
 

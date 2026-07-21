@@ -18,6 +18,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     List<Users> findAll();
     Optional<Users> findByAuthUser(AuthUser authUser);
+    Optional<Users> findByAuthUser_Email(String email);
     Users findByAuthUser_Username(String username);
 
     @Query("SELECT u.idUser FROM Users u JOIN u.authUser a WHERE a.username = :username")

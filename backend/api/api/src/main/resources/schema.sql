@@ -147,19 +147,19 @@ ORDER BY total_sales_amount DESC;
 
 --- Procedure: checkout_cart
 CREATE OR REPLACE PROCEDURE checkout_cart(
-    p_id_user        INT,
+    p_id_user        BIGINT,
     p_payment_method VARCHAR
 ) LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_item             RECORD;
-    v_total            DOUBLE PRECISION := 0;
-    v_subtotal         DOUBLE PRECISION;
-    v_id_payment       INT;
-    v_id_shopping_cart INT;
-    v_status           VARCHAR := 'PENDING';
-    v_client_location  GEOMETRY(Point, 4326);
-    v_closest_warehouse INT;
+    v_item              RECORD;
+    v_total             DOUBLE PRECISION := 0;
+    v_subtotal          DOUBLE PRECISION;
+    v_id_payment        BIGINT;
+    v_id_shopping_cart  BIGINT;
+    v_status            VARCHAR := 'PENDING';
+    v_client_location   GEOMETRY(Point, 4326);
+    v_closest_warehouse BIGINT;
 BEGIN
     IF p_payment_method = 'CARD' THEN
         v_status := 'APPROVED';
@@ -177,10 +177,12 @@ BEGIN
     FROM warehouse_products wp
              JOIN cart_detail cd ON wp.id_product = cd.id_product
              JOIN warehouse w ON wp.id_warehouse = w.id_warehouse
-    WHERE cd.id_shopping_cart = v_id_shopping_cart AND wp.quantity >= cd.quantity
-    GROUP BY wp.id_warehouse, w.location_warehouse
+    WHERE cd.id_shopping_cart = v_id_shopping_cart
+      AND wp.quantity >= cd.quantity
+      AND w.id_user != p_id_user
+    GROUP BY wp.id_warehouse, w.location
     HAVING COUNT(wp.id_product) = (SELECT COUNT(*) FROM cart_detail WHERE id_shopping_cart = v_id_shopping_cart)
-    ORDER BY ST_Distance(w.location_warehouse, v_client_location) ASC
+    ORDER BY ST_Distance(w.location, v_client_location) ASC
     LIMIT 1;
 
     IF v_closest_warehouse IS NULL THEN

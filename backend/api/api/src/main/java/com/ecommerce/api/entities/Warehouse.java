@@ -19,11 +19,15 @@ public class Warehouse {
     @Column(name = "id_warehouse")
     private Long idWarehouse;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 200)
     private String name;
 
     @Column(nullable = false, length = 200)
     private String address;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private Users user;
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;

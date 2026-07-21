@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreDTO {
-    private String name;
-    private String address;
-    private double latitude;
-    private double longitude;
+public class WarehouseProductDTO {
+    private Long idWarehouse;
+    private Long idProduct;
+    private Long quantity;
 }
