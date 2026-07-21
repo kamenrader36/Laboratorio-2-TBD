@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,5 +58,14 @@ public class WarehouseProductService {
         }
 
         return "Inventario actualizado correctamente";
+    }
+    public List<WarehouseProduct> getInventoryByWarehouse(Long idWarehouse, String currentUsername) {
+        Warehouse warehouse = warehouseRepository.findById(idWarehouse)
+                .orElseThrow(() -> new RuntimeException("Almacén no encontrado"));
+
+        if (!warehouse.getUser().getAuthUser().getUsername().equals(currentUsername)) {
+            throw new SecurityException("No tienes acceso a esta bodega");
+        }
+        return warehouseProductRepository.findByWarehouse_IdWarehouse(idWarehouse);
     }
 }

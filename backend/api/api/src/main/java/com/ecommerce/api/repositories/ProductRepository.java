@@ -21,4 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Transactional
     @Query(value = "CALL apply_discount(:idCategory, :percentage)", nativeQuery = true)
     void applyDiscount(@Param("idCategory") Long idCategory, @Param("percentage") int percentage);
+
+    List<Product> findByUser_AuthUser_Username(String username);
+
+    boolean existsBySkuProduct(Long skuProduct);
 }

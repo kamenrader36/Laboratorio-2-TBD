@@ -17,6 +17,4 @@ public class ProductDTO {
     private Long id_category;
 
     private Long skuProduct;
-
-    private Long id_user;
 }
