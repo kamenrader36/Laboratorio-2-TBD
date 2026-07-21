@@ -35,5 +35,5 @@ public class HistorialStock {
 
     @ManyToOne
     @JoinColumn(name = "id_store")
-    private Store store;
+    private Warehouse warehouse;
 }

@@ -9,15 +9,15 @@ import org.locationtech.jts.geom.Point;
 
 
 @Entity
-@Table(name = "store")
+@Table(name = "warehouse")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Store {
+public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_store")
-    private Long idStore;
+    @Column(name = "id_warehouse")
+    private Long idWarehouse;
 
     @Column(nullable = false, length = 100)
     private String name;

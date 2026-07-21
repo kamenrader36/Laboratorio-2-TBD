@@ -26,10 +26,6 @@ public class AuthUser {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @OneToOne
-    @JoinColumn(name = "idUser")
-    private Users user;
-
     @ManyToOne
     @JoinColumn(name = "id_role", nullable = false)
     private Role role;

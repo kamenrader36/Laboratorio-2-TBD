@@ -3,7 +3,7 @@ package com.ecommerce.api.repositories;
 import com.ecommerce.api.dto.PaymentDTO;
 import com.ecommerce.api.dto.PurchaseDetailDTO;
 import com.ecommerce.api.dto.SalesDTO;
-import com.ecommerce.api.entities.Payment; // Asumiendo que tienes (o crearás) esta entidad
+import com.ecommerce.api.entities.Payment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -48,11 +48,13 @@ public interface SalesRepository extends JpaRepository<Payment, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-        UPDATE products p
-        SET stock = stock - dp.quantity
+        UPDATE warehouse_products wp
+        SET quantity = wp.quantity - dp.quantity
         FROM detail_payment dp
-        WHERE dp.id_product = p.id_product 
+        JOIN payments pay ON pay.id_payment = dp.id_payment
+        WHERE wp.id_product = dp.id_product 
           AND dp.id_payment = :idPayment
+          AND wp.id_warehouse = pay.id_warehouse
         """, nativeQuery = true)
     void discountStockFromPayment(@Param("idPayment") Long idPayment);
 
@@ -64,7 +66,7 @@ public interface SalesRepository extends JpaRepository<Payment, Long> {
 
     @Query("""
         SELECT new com.ecommerce.api.dto.PaymentDTO(
-            p.idPayment, p.user.idUser, p.total, p.status, p.paymentMethod, p.paymentDate
+            p.idPayment, p.user.idUser, p.total, p.paymentDate, p.status, p.paymentMethod
         ) 
         FROM Payment p WHERE p.status = 'PENDING'
     """)
@@ -72,7 +74,7 @@ public interface SalesRepository extends JpaRepository<Payment, Long> {
 
     @Query("""
         SELECT new com.ecommerce.api.dto.PaymentDTO(
-            p.idPayment, p.user.idUser, p.total, p.status, p.paymentMethod, p.paymentDate
+            p.idPayment, p.user.idUser, p.total, p.paymentDate, p.status, p.paymentMethod
         ) 
         FROM Payment p WHERE p.user.idUser = :idUser 
         ORDER BY p.paymentDate DESC

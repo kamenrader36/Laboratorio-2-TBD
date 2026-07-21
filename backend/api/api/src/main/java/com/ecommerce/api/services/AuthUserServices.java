@@ -75,20 +75,22 @@ public class AuthUserServices {
     }
 
     public String loginUser(LoginDTO login) {
-        AuthUser user = authUserRepository.findByUsernameOrEmail(login.getIdentifier(), login.getIdentifier())
-                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
-                
-        if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-            Long idUser = user.getUser().getIdUser(); 
-            return jwtUtils.generateToken(user, idUser);
+        AuthUser authUser = authUserRepository.findByUsernameOrEmail(login.getIdentifier(), login.getIdentifier())
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+
+        if (passwordEncoder.matches(login.getPassword(), authUser.getPassword())) {
+            Users user = userRepository.findByAuthUser(authUser)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            return jwtUtils.generateToken(authUser, user.getIdUser());
         } else {
-            throw new RuntimeException("Contrasena incorrecta");
+            throw new RuntimeException("Contraseña incorrecta");
         }
     }
 
     public List<ProfileDTO> getAllProfiles() {
     
-            List<Users> users = userRepository.findAll();
+        List<Users> users = userRepository.findAll();
 
         return users.stream().map(u -> new ProfileDTO(
             u.getIdUser(),

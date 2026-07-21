@@ -3,5 +3,5 @@ package com.ecommerce.api.services;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StoreProductService {
+public class WarehouseProductService {
 }

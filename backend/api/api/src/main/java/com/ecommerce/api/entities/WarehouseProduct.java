@@ -6,18 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "store_products")
+@Table(name = "warehouse_products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreProduct {
+public class WarehouseProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInventory;
 
     @ManyToOne
-    @JoinColumn(name = "id_store")
-    private Store store;
+    @JoinColumn(name = "id_warehouse")
+    private Warehouse warehouse;
 
     @ManyToOne
     @JoinColumn(name = "id_product")

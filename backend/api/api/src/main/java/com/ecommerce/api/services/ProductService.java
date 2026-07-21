@@ -43,4 +43,7 @@ public class ProductService {
         
         return "Producto publicado";
     }
+    public void applyCategoryDiscount(Long categoryId, int percentage) {
+        productRepository.applyDiscount(categoryId, percentage);
+    }
 }

@@ -37,8 +37,9 @@ public class Users {
     @Column(nullable = false, length = 15)
     private String phone;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime lastPurchase;
+
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point location;
     @OneToOne

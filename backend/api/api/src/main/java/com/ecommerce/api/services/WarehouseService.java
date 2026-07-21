@@ -1,8 +1,8 @@
 package com.ecommerce.api.services;
 
 import com.ecommerce.api.dto.StoreDTO;
-import com.ecommerce.api.entities.Store;
-import com.ecommerce.api.repositories.StoreRepository;
+import com.ecommerce.api.entities.Warehouse;
+import com.ecommerce.api.repositories.WharehouseRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -11,19 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StoreService {
+public class WarehouseService {
     @Autowired
-    private StoreRepository storeRepository;
+    private WharehouseRepository wharehouseRepository;
 
     public String createStore(StoreDTO storeDTO){
-        Store store = new Store();
-        store.setName(storeDTO.getName());
-        store.setAddress(storeDTO.getAddress());
+        Warehouse warehouse = new Warehouse();
+        warehouse.setName(storeDTO.getName());
+        warehouse.setAddress(storeDTO.getAddress());
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Coordinate coordinate = new Coordinate(storeDTO.getLatitude(), storeDTO.getLongitude());
         Point location = geometryFactory.createPoint(coordinate);
-        store.setLocation(location);
-        storeRepository.save(store);
+        warehouse.setLocation(location);
+        wharehouseRepository.save(warehouse);
         return "Tienda registrada correctamente";
     }
 }
