@@ -36,7 +36,7 @@ public class Product {
     @Column(nullable = false, unique = true)
     private Long skuProduct;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private double stock;
 
     @ManyToOne

@@ -1,6 +1,8 @@
 package com.ecommerce.api.repositories;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,4 +16,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.productDescription) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Product> searchByKeyword(@Param("keyword") String keyword);
+
+    @Modifying
+    @Transactional
+    @Query(value = "CALL apply_discount(:idCategory, :percentage)", nativeQuery = true)
+    void applyDiscount(@Param("idCategory") Long idCategory, @Param("percentage") int percentage);
 }

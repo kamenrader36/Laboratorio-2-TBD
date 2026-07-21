@@ -36,6 +36,10 @@ public class Payment {
     @JoinColumn(name = "id_user", nullable = false)
     private Users user;
 
+    @ManyToOne
+    @JoinColumn(name = "id_warehouse")
+    private Warehouse warehouse;
+
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
     private List<DetailPayment> details;
 }

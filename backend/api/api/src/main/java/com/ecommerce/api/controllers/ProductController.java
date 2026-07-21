@@ -2,20 +2,15 @@ package com.ecommerce.api.controllers;
 
 import java.util.List;
 
+import com.ecommerce.api.dto.DiscountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommerce.api.dto.ProductDTO;
 import com.ecommerce.api.entities.Product;
 import com.ecommerce.api.repositories.ProductRepository;
 import com.ecommerce.api.services.ProductService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 
 @RestController
@@ -49,6 +44,16 @@ public class ProductController {
 
         List<Product> keywordProducts = productRepository.searchByKeyword(keyword);
         return ResponseEntity.ok(keywordProducts);
+    }
+
+    @PostMapping("/apply-discount")
+    public ResponseEntity<?> applyMassiveDiscount(@RequestBody DiscountDTO discountDTO) {
+        try {
+            productService.applyCategoryDiscount(discountDTO.getIdCategory(), (int) discountDTO.getPercent());
+            return ResponseEntity.ok("Descuento aplicado con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al procesar el descuento: " + e.getMessage());
+        }
     }
     
 }

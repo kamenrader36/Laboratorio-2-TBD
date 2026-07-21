@@ -25,4 +25,7 @@ public class Category {
 
     @Column(nullable = false, length = 150)
     private String categoryDescription;
+
+    @Column(name = "is_hazardous", nullable = false)
+    private Boolean isHazardous = false;
 }

@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Table(name = "users")
@@ -36,9 +37,11 @@ public class Users {
     @Column(nullable = false, length = 15)
     private String phone;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime lastPurchase;
 
+    @Column(columnDefinition = "geometry(Point, 4326)")
+    private Point location;
     @OneToOne
     @JoinColumn(name = "id_auth")
     private AuthUser authUser;

@@ -6,12 +6,18 @@ import com.ecommerce.api.dto.ProfileDTO;
 import com.ecommerce.api.dto.RegisterDTO;
 import com.ecommerce.api.entities.AuthUser;
 import com.ecommerce.api.entities.Users;
+import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.AuthUserRepository;
 import com.ecommerce.api.repositories.UsersRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ecommerce.api.repositories.WarehouseRepository;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +31,8 @@ public class AuthUserServices {
     private UsersRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private WarehouseRepository warehouseRepository;
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -61,27 +69,40 @@ public class AuthUserServices {
         newUser.setAddress(user.getAddress());
         newUser.setPhone(user.getPhone());
         newUser.setAuthUser(savedAuth);
-        
-        userRepository.save(newUser);
 
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Coordinate coordinate = new Coordinate(user.getLongitud(), user.getLatitud());
+        Point userLocation = geometryFactory.createPoint(coordinate);
+        newUser.setLocation(userLocation);
+
+        Users savedUser = userRepository.save(newUser);
+        Warehouse initialWarehouse = new Warehouse();
+        String warehouseName = savedUser.getName() + " - Casa Matriz";
+        initialWarehouse.setName(warehouseName);
+        initialWarehouse.setAddress(savedUser.getAddress());
+        initialWarehouse.setLocation(userLocation);
+        initialWarehouse.setUser(savedUser);
+        warehouseRepository.save(initialWarehouse);
         return "Usuario registrado con exito";
     }
 
     public String loginUser(LoginDTO login) {
-        AuthUser user = authUserRepository.findByUsernameOrEmail(login.getIdentifier(), login.getIdentifier())
-                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
-                
-        if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-            Long idUser = user.getUser().getIdUser(); 
-            return jwtUtils.generateToken(user, idUser);
+        AuthUser authUser = authUserRepository.findByUsernameOrEmail(login.getIdentifier(), login.getIdentifier())
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+
+        if (passwordEncoder.matches(login.getPassword(), authUser.getPassword())) {
+            Users user = userRepository.findByAuthUser(authUser)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            return jwtUtils.generateToken(authUser, user.getIdUser());
         } else {
-            throw new RuntimeException("Contrasena incorrecta");
+            throw new RuntimeException("Contraseña incorrecta");
         }
     }
 
     public List<ProfileDTO> getAllProfiles() {
     
-            List<Users> users = userRepository.findAll();
+        List<Users> users = userRepository.findAll();
 
         return users.stream().map(u -> new ProfileDTO(
             u.getIdUser(),
