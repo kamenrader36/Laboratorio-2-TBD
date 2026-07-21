@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LocationPicker from "../components/LocationPicker.js";
 import {
   Box, Container, Paper, Typography, TextField,
-  Button, InputAdornment, Divider, Alert, CircularProgress,
+  Button, InputAdornment, Divider, CircularProgress, Alert
 } from "@mui/material";
 import {
   PersonOutlined as PersonIcon,
@@ -11,7 +13,9 @@ import {
   PhoneOutlined as PhoneIcon,
   AccountCircleOutlined as UsernameIcon,
   CheckCircleOutlined as CheckIcon,
+  LocationOnOutlined as LocationIcon,
 } from "@mui/icons-material";
+
 
 const validateRut = (rut) => {
   const clean = rut.replace(/[^0-9kK]/g, "").toUpperCase();
@@ -56,20 +60,33 @@ const validators = {
 };
 
 const FIELDS = [
-  { name: "username", label: "Nombre de usuario",  icon: <UsernameIcon />, placeholder: "ej: empresa_chile", type: "text" },
-  { name: "name",     label: "Nombre completo",     icon: <PersonIcon />,   placeholder: "ej: Juan Pérez González", type: "text" },
-  { name: "email",    label: "Correo electrónico",  icon: <EmailIcon />,    placeholder: "ej: contacto@empresa.cl", type: "email" },
-  { name: "rut",      label: "RUT",                 icon: <BadgeIcon />,    placeholder: "ej: 12.345.678-9", type: "text" },
-  { name: "address",  label: "Dirección",           icon: <HomeIcon />,     placeholder: "ej: Av. Libertador 1234, Santiago", type: "text" },
-  { name: "phone",    label: "Teléfono",            icon: <PhoneIcon />,    placeholder: "ej: +56912345678", type: "tel" },
+  { name: "username", label: "Nombre de usuario", icon: <UsernameIcon />, placeholder: "ej: empresa_chile", type: "text" },
+  { name: "name",     label: "Nombre completo",    icon: <PersonIcon />,   placeholder: "ej: Juan Pérez González", type: "text" },
+  { name: "email",    label: "Correo electrónico", icon: <EmailIcon />,    placeholder: "ej: contacto@empresa.cl", type: "email" },
+  { name: "rut",      label: "RUT",                icon: <BadgeIcon />,    placeholder: "ej: 12.345.678-9", type: "text" },
+  { name: "address",  label: "Dirección escrita",  icon: <HomeIcon />,     placeholder: "ej: Av. Libertador 1234, Santiago", type: "text" },
+  { name: "phone",    label: "Teléfono",           icon: <PhoneIcon />,    placeholder: "ej: +56912345678", type: "tel" },
 ];
 
-const RegisterPage = ({ onNavigate }) => {
-  const [form, setForm]       = useState({ username: "", name: "", email: "", rut: "", address: "", phone: "" });
+const RegisterPage = () => {
+  const navigate = useNavigate();
+  
+  const [form, setForm] = useState({ 
+    username: "", 
+    name: "", 
+    email: "", 
+    rut: "", 
+    address: "", 
+    phone: "",
+    latitude: null,
+    longitude: null,
+  });
+  
   const [errors, setErrors]   = useState({});
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [locationError, setLocationError] = useState(false);
 
   const handleChange = (e) => {
     let { name, value } = e.target;
@@ -85,16 +102,56 @@ const RegisterPage = ({ onNavigate }) => {
     setErrors((prev) => ({ ...prev, [name]: validators[name](value) }));
   };
 
-  const isFormValid = () => FIELDS.every((f) => !validators[f.name](form[f.name]));
+  // Capturar coordenadas desde el componente LocationPicker
+  const handleLocationUpdate = (coords) => {
+    setForm((prev) => ({
+      ...prev,
+      latitude: coords.lat,
+      longitude: coords.lng,
+    }));
+    setLocationError(false); // Limpiar error si ya seleccionó punto
+  };
+
+  const isFormValid = () => {
+    const textFieldsValid = FIELDS.every((f) => !validators[f.name](form[f.name]));
+    const hasCoordinates = form.latitude !== null && form.longitude !== null;
+    return textFieldsValid && hasCoordinates;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Marcar todos los campos como vistos
     const allTouched = Object.fromEntries(FIELDS.map((f) => [f.name, true]));
     const allErrors  = Object.fromEntries(FIELDS.map((f) => [f.name, validators[f.name](form[f.name])]));
+    
     setTouched(allTouched);
     setErrors(allErrors);
+
+    // Validar ubicación geográfica
+    if (!form.latitude || !form.longitude) {
+      setLocationError(true);
+      return;
+    }
+
     if (!isFormValid()) return;
+
     setLoading(true);
+    
+    // Aquí puedes armar tu payload como en Vue y hacer tu llamado a API:
+    /*
+    const payload = {
+      username: form.username,
+      name: form.name,
+      email: form.email,
+      rut: form.rut,
+      address: form.address,
+      phone: form.phone,
+      latitud: form.latitude,
+      longitud: form.longitude
+    };
+    */
+
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
     setSuccess(true);
@@ -107,9 +164,13 @@ const RegisterPage = ({ onNavigate }) => {
           <CheckIcon sx={{ fontSize: 64, color: "#43A047", mb: 2 }} />
           <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>¡Registro exitoso!</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Tu cuenta ha sido creada. Ya puedes iniciar sesión.</Typography>
-          <Button variant="contained" fullWidth onClick={() => onNavigate("home")}
-            sx={{ bgcolor: "#1565C0", textTransform: "none", fontWeight: 600, py: 1.2, borderRadius: 2, boxShadow: "none", "&:hover": { bgcolor: "#0D47A1", boxShadow: "none" } }}>
-            Volver al inicio
+          <Button 
+            variant="contained" 
+            fullWidth 
+            onClick={() => navigate("/login")}
+            sx={{ bgcolor: "#1565C0", textTransform: "none", fontWeight: 600, py: 1.2, borderRadius: 2, boxShadow: "none", "&:hover": { bgcolor: "#0D47A1", boxShadow: "none" } }}
+          >
+            Ir a Iniciar Sesión
           </Button>
         </Paper>
       </Box>
@@ -132,7 +193,7 @@ const RegisterPage = ({ onNavigate }) => {
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh", py: 5 }}>
       <Container maxWidth="sm">
         <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 2, cursor: "pointer" }} onClick={() => navigate("/")}>
             <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
               <rect width="36" height="36" rx="8" fill="#1565C0" />
               <path d="M8 10 L16 18 L8 26" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -145,7 +206,7 @@ const RegisterPage = ({ onNavigate }) => {
             </Typography>
           </Box>
           <Typography variant="h5" fontWeight={700} sx={{ color: "#111827", mb: 0.5 }}>Crear cuenta empresarial</Typography>
-          <Typography variant="body2" color="text.secondary">Completa tus datos para acceder a la plataforma B2B</Typography>
+          <Typography variant="body2" color="text.secondary">Completa tus datos y selecciona tu punto en el mapa</Typography>
         </Box>
 
         <Paper elevation={0} sx={{ border: "1px solid #E3E8F0", borderRadius: 3, p: { xs: 3, sm: 4 }, boxShadow: "0 4px 20px rgba(21,101,192,0.07)" }}>
@@ -175,16 +236,45 @@ const RegisterPage = ({ onNavigate }) => {
                   />
                 </Box>
               ))}
+
+              {/* --- COMPONENTE DE UBICACIÓN GEOGRÁFICA (MAPA) --- */}
+              <Box>
+                <Typography variant="caption" fontWeight={600} sx={{ color: "#374151", mb: 0.5, display: "block", fontSize: "0.8rem" }}>
+                  Ubicación Geográfica en Mapa *
+                </Typography>
+                
+                <Paper variant="outlined" sx={{ p: 1.5, borderRadius: "8px", bgcolor: "#FAFAFA", borderColor: locationError ? "#d32f2f" : "#E3E8F0" }}>
+                  <LocationPicker onUpdateLocation={handleLocationUpdate} />
+
+                  {form.latitude && form.longitude && (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 1.5, color: "#2E7D32" }}>
+                      <LocationIcon fontSize="small" />
+                      <Typography variant="caption" fontWeight={600}>
+                        Ubicación capturada: {form.latitude.toFixed(5)}, {form.longitude.toFixed(5)}
+                      </Typography>
+                    </Box>
+                  )}
+                </Paper>
+
+                {locationError && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, display: "block", fontSize: "0.72rem" }}>
+                    Por favor, selecciona un punto en el mapa para registrar tu dirección geográfica.
+                  </Typography>
+                )}
+              </Box>
+
               <Divider sx={{ my: 0.5, borderColor: "#E3E8F0" }} />
+              
               <Button type="submit" variant="contained" fullWidth disabled={loading}
                 sx={{ bgcolor: "#1565C0", textTransform: "none", fontWeight: 700, fontSize: "0.95rem", py: 1.3, borderRadius: "8px", boxShadow: "none",
                   "&:hover": { bgcolor: "#0D47A1", boxShadow: "none" }, "&.Mui-disabled": { bgcolor: "#B0BEC5", color: "white" } }}>
-                {loading ? <CircularProgress size={20} sx={{ color: "white" }} /> : "Crear cuenta"}
+                {loading ? <CircularProgress size={20} sx={{ color: "white" }} /> : "Crear cuenta empresarial"}
               </Button>
+              
               <Box sx={{ textAlign: "center" }}>
                 <Typography variant="caption" color="text.secondary" fontSize="0.8rem">
                   ¿Ya tienes cuenta?{" "}
-                  <Button onClick={() => onNavigate("login")}
+                  <Button onClick={() => navigate("/login")}
                     sx={{ textTransform: "none", color: "#1565C0", fontWeight: 600, fontSize: "0.8rem", p: 0, minWidth: 0,
                       "&:hover": { bgcolor: "transparent", textDecoration: "underline" } }}>
                     Iniciar sesión
@@ -195,9 +285,8 @@ const RegisterPage = ({ onNavigate }) => {
           </form>
         </Paper>
 
-        {/* Volver al inicio */}
         <Box sx={{ textAlign: "center", mt: 2 }}>
-          <Button onClick={() => onNavigate("home")}
+          <Button onClick={() => navigate("/")}
             sx={{ textTransform: "none", color: "#6B7280", fontSize: "0.8rem",
               "&:hover": { bgcolor: "transparent", color: "#1565C0" } }}>
             ← Volver al inicio
