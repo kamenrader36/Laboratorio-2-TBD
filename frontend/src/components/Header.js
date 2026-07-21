@@ -56,7 +56,7 @@ const Header = () => {
             <Divider orientation="vertical" flexItem sx={{ bgcolor: "rgba(255,255,255,0.25)" }} />
             
             <Button startIcon={<PersonOutlineIcon />} variant="outlined"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/buyer")}
               sx={{ color: "white", borderColor: "rgba(255,255,255,0.5)", textTransform: "none", fontWeight: 500, fontSize: "0.875rem",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" } }}>
               Iniciar sesión
