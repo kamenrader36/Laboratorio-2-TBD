@@ -14,6 +14,7 @@ import com.ecommerce.api.services.ProductService;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
 
     @Autowired
@@ -41,6 +42,17 @@ public class ProductController {
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword){
         List<Product> keywordProducts = productRepository.searchByKeyword(keyword);
         return ResponseEntity.ok(keywordProducts);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Product>> getAllProducts(
+            @RequestParam(required = false) Long id_category) {
+
+        List<Product> products = (id_category != null)
+                ? productRepository.findByCategory(id_category)
+                : productRepository.findAll();
+
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping("/apply-discount")

@@ -8,6 +8,7 @@ import com.ecommerce.api.entities.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +26,11 @@ public interface SalesRepository extends JpaRepository<Payment, Long> {
         """, nativeQuery = true)
     List<SalesDTO> findByUser(@Param("idUser") Long idUser);
 
-    @Modifying
-    @Transactional
-    @Query(value = "CALL checkout_cart(:idUser, :paymentMethod)", nativeQuery = true)
-    void checkout(@Param("idUser") Long idUser, @Param("paymentMethod") String paymentMethod);
-
+    @Procedure(procedureName = "checkout_cart")
+    void checkout(
+            @Param("p_id_user") Long idUser,
+            @Param("p_payment_method") String paymentMethod
+    );
     @Modifying
     @Transactional
     @Query(value = "CALL restore_stock_on_cancel(:idPayment)", nativeQuery = true)

@@ -30,4 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByIdProductAndUser_AuthUser_Username(Long idProduct, String username);
 
     boolean existsBySkuProductAndIdProductNot(Long skuProduct, Long idProduct);
+
+    List<Product> findByCategory(Long idCategory);
 }
