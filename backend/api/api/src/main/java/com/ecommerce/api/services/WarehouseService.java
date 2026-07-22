@@ -1,6 +1,7 @@
 package com.ecommerce.api.services;
 
 import com.ecommerce.api.dto.WarehouseDTO;
+import com.ecommerce.api.dto.WarehouseResponseDTO;
 import com.ecommerce.api.entities.Users;
 import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.UsersRepository;
@@ -17,12 +18,14 @@ import java.util.List;
 
 @Service
 public class WarehouseService {
+
     @Autowired
     private WarehouseRepository warehouseRepository;
+
     @Autowired
     private UsersRepository usersRepository;
 
-    public String createWarehouse(WarehouseDTO warehouseDTO, String currentUsername){
+    public String createWarehouse(WarehouseDTO warehouseDTO, String currentUsername) {
         Users owner = usersRepository.findByAuthUser_Username(currentUsername);
 
         Warehouse warehouse = new Warehouse();
@@ -40,8 +43,19 @@ public class WarehouseService {
 
         return "Tienda registrada correctamente";
     }
-    @Transactional()
-    public List<Warehouse> getMyWarehouses(String currentUsername) {
-        return warehouseRepository.findByUser_AuthUser_Username(currentUsername);
+
+    @Transactional
+    public List<WarehouseResponseDTO> getMyWarehouses(String currentUsername) {
+        List<Warehouse> warehouses = warehouseRepository.findByUser_AuthUser_Username(currentUsername);
+
+        return warehouses.stream()
+                .map(w -> new WarehouseResponseDTO(
+                        w.getIdWarehouse(),
+                        w.getName(),
+                        w.getAddress(),
+                        w.getLocation() != null ? w.getLocation().getY() : null,
+                        w.getLocation() != null ? w.getLocation().getX() : null
+                ))
+                .toList();
     }
 }

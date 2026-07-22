@@ -8,6 +8,7 @@ import { HomeOutlined as HomeIcon } from "@mui/icons-material";
 import BuyerSidebar from "../components/buyer/BuyerSidebar";
 import BuyerOrders from "../components/buyer/BuyerOrders";
 import BuyerProfile from "../components/buyer/BuyerProfile";
+import BuyerWarehouses from "../components/buyer/BuyerWarehouses";
 import { useAuth } from "../context/AuthContext";
 
 const StoreLogo = ({ onGoHome }) => (
@@ -46,21 +47,21 @@ const BuyerPage = () => {
   };
 
   const renderSection = () => {
-    switch (activeSection) {
-      case "profile":
-        return <BuyerProfile />;
-      case "help":
-        return (
-          <Box sx={{ textAlign: "center", py: 8 }}>
-            <Typography color="text.secondary">
-              Centro de ayuda próximamente.
-            </Typography>
-          </Box>
-        );
-      default:
-        return <BuyerOrders />;
-    }
-  };
+  switch (activeSection) {
+    case "profile":
+      return <BuyerProfile />;
+    case "branches":
+      return <BuyerWarehouses />;
+    case "help":
+      return (
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <Typography color="text.secondary">Centro de ayuda próximamente.</Typography>
+        </Box>
+      );
+    default:
+      return <BuyerOrders />;
+  }
+};
 
   return (
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh" }}>

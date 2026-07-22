@@ -1,96 +1,180 @@
 import React, { useState } from "react";
 import {
-  Box, Typography, Avatar, Divider,
-  List, ListItemButton, ListItemIcon, ListItemText,
+  Box,
+  Paper,
+  Typography,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Avatar,
 } from "@mui/material";
 import {
   ShoppingBagOutlined as OrdersIcon,
-  PersonOutlined as PersonIcon,
-  HelpOutlined as HelpIcon,
+  PersonOutlineOutlined as ProfileIcon,
+  StoreOutlined as StoreIcon,
+  HelpOutlineOutlined as HelpIcon,
   LogoutOutlined as LogoutIcon,
-  ChevronRight as ChevronRightIcon,
-  HomeWorkOutlinedIcon as HomeworkIcon,
+  BusinessOutlined as BusinessIcon,
 } from "@mui/icons-material";
-import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
 import LogoutDialog from "../LogoutDialog";
-import { useAuth } from "../../context/AuthContext";
 
-const MENU_ITEMS = [
-  { key: "orders",  label: "Mis compras", icon: <OrdersIcon /> },
-  { key: "profile", label: "Mi perfil",   icon: <PersonIcon /> },
-  { key: "branches",label: "Sucursales",  icon: <HomeWorkOutlinedIcon /> },
-  { key: "help",    label: "Ayuda",       icon: <HelpIcon /> },
-
+const menuItems = [
+  { key: "orders", label: "Mis compras", icon: <OrdersIcon /> },
+  { key: "profile", label: "Perfil", icon: <ProfileIcon /> },
+  { key: "branches", label: "Sucursales", icon: <StoreIcon /> },
+  { key: "help", label: "Ayuda", icon: <HelpIcon /> },
 ];
 
 const BuyerSidebar = ({ activeSection, onSelect, onLogout }) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { user } = useAuth();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
-  const initials = user?.username
-    ? user.username.slice(0, 2).toUpperCase()
-    : "U";
+  const itemTextSlotProps = {
+    primary: {
+      sx: {
+        fontSize: "0.875rem",
+        fontWeight: 500,
+        color: "#374151",
+      },
+    },
+  };
+
+  const selectedTextSlotProps = {
+    primary: {
+      sx: {
+        fontSize: "0.875rem",
+        fontWeight: 700,
+        color: "#1565C0",
+      },
+    },
+  };
 
   return (
     <>
-      <Box sx={{ bgcolor: "white", border: "1px solid #E3E8F0", borderRadius: 3, overflow: "hidden",
-        boxShadow: "0 2px 8px rgba(21,101,192,0.06)" }}>
-        <Box sx={{ background: "linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)",
-          px: 3, py: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1.5 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: "rgba(255,255,255,0.2)",
-            color: "white", fontSize: "1.4rem", fontWeight: 700, border: "2px solid rgba(255,255,255,0.4)" }}>
-            {initials}
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          border: "1px solid #E5EAF2",
+          overflow: "hidden",
+          bgcolor: "white",
+        }}
+      >
+        <Box
+          sx={{
+            p: 2.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            background: "linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 100%)",
+          }}
+        >
+          <Avatar
+            sx={{
+              width: 46,
+              height: 46,
+              bgcolor: "rgba(21,101,192,0.10)",
+              color: "#1565C0",
+            }}
+          >
+            <BusinessIcon />
           </Avatar>
-          <Box sx={{ textAlign: "center" }}>
-            <Typography fontWeight={700} sx={{ color: "white", fontSize: "0.95rem" }}>
-              {user?.username || "Usuario"}
+
+          <Box>
+            <Typography fontWeight={700} fontSize="0.95rem" color="#111827">
+              Mi tienda
             </Typography>
-            <Typography fontSize="0.75rem" sx={{ color: "rgba(255,255,255,0.7)", mt: 0.25 }}>
-              {user?.email || ""}
+            <Typography fontSize="0.78rem" color="text.secondary">
+              Panel de comprador B2B
             </Typography>
           </Box>
         </Box>
 
         <Divider />
 
-        <List disablePadding sx={{ py: 1 }}>
-          {MENU_ITEMS.map((item) => (
-            <ListItemButton key={item.key} selected={activeSection === item.key}
-              onClick={() => onSelect(item.key)}
-              sx={{ px: 2.5, py: 1.25,
-                borderLeft: activeSection === item.key ? "3px solid #1565C0" : "3px solid transparent",
-                "&.Mui-selected": { bgcolor: "rgba(21,101,192,0.06)",
-                  "& .MuiListItemText-primary": { color: "#1565C0", fontWeight: 700 },
-                  "& .MuiListItemIcon-root": { color: "#1565C0" } },
-                "&:hover": { bgcolor: "rgba(21,101,192,0.04)" } }}>
-              <ListItemIcon sx={{ minWidth: 36, color: "#6B7280" }}>
-                {React.cloneElement(item.icon, { sx: { fontSize: 20 } })}
-              </ListItemIcon>
-              <ListItemText primary={item.label}
-                primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500, color: "#374151" }} />
-              <ChevronRightIcon sx={{ fontSize: 16, color: "#D1D5DB" }} />
-            </ListItemButton>
-          ))}
+        <List sx={{ py: 1.2, px: 1 }}>
+          {menuItems.map((item) => {
+            const isSelected = activeSection === item.key;
+
+            return (
+              <ListItemButton
+                key={item.key}
+                selected={isSelected}
+                onClick={() => onSelect(item.key)}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  minHeight: 46,
+                  "&.Mui-selected": {
+                    bgcolor: "rgba(21,101,192,0.08)",
+                  },
+                  "&.Mui-selected:hover": {
+                    bgcolor: "rgba(21,101,192,0.12)",
+                  },
+                  "&:hover": {
+                    bgcolor: "#F8FAFC",
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 36,
+                    color: isSelected ? "#1565C0" : "#6B7280",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+
+                <ListItemText
+                  primary={item.label}
+                  slotProps={isSelected ? selectedTextSlotProps : itemTextSlotProps}
+                />
+              </ListItemButton>
+            );
+          })}
         </List>
 
         <Divider />
 
-        <List disablePadding sx={{ py: 1 }}>
-          <ListItemButton onClick={() => setDialogOpen(true)}
-            sx={{ px: 2.5, py: 1.25, "&:hover": { bgcolor: "rgba(229,57,53,0.04)" } }}>
+        <Box sx={{ p: 1 }}>
+          <ListItemButton
+            onClick={() => setLogoutOpen(true)}
+            sx={{
+              borderRadius: 2,
+              minHeight: 46,
+              "&:hover": {
+                bgcolor: "rgba(229,57,53,0.06)",
+              },
+            }}
+          >
             <ListItemIcon sx={{ minWidth: 36, color: "#E53935" }}>
-              <LogoutIcon sx={{ fontSize: 20 }} />
+              <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Cerrar sesión"
-              primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 500, color: "#E53935" }} />
+
+            <ListItemText
+              primary="Cerrar sesión"
+              slotProps={{
+                primary: {
+                  sx: {
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    color: "#E53935",
+                  },
+                },
+              }}
+            />
           </ListItemButton>
-        </List>
-      </Box>
+        </Box>
+      </Paper>
 
       <LogoutDialog
-        open={dialogOpen}
-        onConfirm={() => { setDialogOpen(false); onLogout(); }}
-        onCancel={() => setDialogOpen(false)}
+        open={logoutOpen}
+        onCancel={() => setLogoutOpen(false)}
+        onConfirm={() => {
+          setLogoutOpen(false);
+          onLogout();
+        }}
       />
     </>
   );
