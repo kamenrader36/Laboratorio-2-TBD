@@ -3,7 +3,7 @@ import {
   Drawer, Box, Typography, IconButton, Button,
   Avatar, Stack, FormControl, RadioGroup, 
   FormControlLabel, Radio, Paper, CircularProgress,
-  Divider 
+  Divider, Alert 
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -22,11 +22,14 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("CARD");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCheckout = async () => {
     if (cartItems.length === 0 || loading) return;
 
     setLoading(true);
+    setErrorMessage(""); // Limpiar errores previos
+
     try {
       const tokenActual = localStorage.getItem("token") || token;
 
@@ -52,11 +55,17 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
         }, 3000);
 
       } else {
-        const errorText = await response.text();
-        alert("Error: " + (errorText || "No se pudo procesar la compra"));
+        // Intentar leer la respuesta como JSON o texto
+        const errorData = await response.json().catch(() => null);
+        let rawMessage = errorData?.message || await response.text() || "No se pudo procesar la compra";
+
+        // Limpiar el mensaje si viene con formato de PostgreSQL/PLpgSQL
+        let cleanMessage = rawMessage.split("\n")[0].replace("ERROR: ", "").trim();
+
+        setErrorMessage(cleanMessage);
       }
     } catch (error) {
-      alert("Error de conexión con el servidor.");
+      setErrorMessage("Error de conexión con el servidor.");
     } finally {
       setLoading(false);
     }
@@ -142,6 +151,18 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
           {/* Footer con Método de Pago y Botón de Pago Directo */}
           {cartItems.length > 0 && (
             <Box sx={{ p: 2.5, bgcolor: "#F8FAFC", borderTop: "1px solid #E3E8F0" }}>
+
+              {/* 🔴 ALERTA DE ERROR */}
+              {errorMessage && (
+                <Alert 
+                  severity="error" 
+                  onClose={() => setErrorMessage("")} 
+                  sx={{ mb: 2, fontSize: "0.85rem" }}
+                >
+                  {errorMessage}
+                </Alert>
+              )}
+
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>Método de Pago:</Typography>
               <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
                 <FormControlLabel value="CARD" control={<Radio size="small" />} label="Tarjeta (Instantáneo)" />
