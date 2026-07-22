@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Box, Container, Grid, AppBar, Toolbar,
-  Typography, IconButton, Tooltip,
+  Box,
+  Container,
+  Grid,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { HomeOutlined as HomeIcon } from "@mui/icons-material";
+
 import BuyerSidebar from "../components/buyer/BuyerSidebar";
 import BuyerOrders from "../components/buyer/BuyerOrders";
 import BuyerProfile from "../components/buyer/BuyerProfile";
 import BuyerWarehouses from "../components/buyer/BuyerWarehouses";
+import BuyerProducts from "../components/buyer/BuyerProducts";
 import { useAuth } from "../context/AuthContext";
 
 const StoreLogo = ({ onGoHome }) => (
@@ -25,12 +33,28 @@ const StoreLogo = ({ onGoHome }) => (
   >
     <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
       <rect width="36" height="36" rx="8" fill="white" fillOpacity="0.15" />
-      <path d="M8 10 L16 18 L8 26" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M16 10 H28 V18 H16" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M8 10 L16 18 L8 26"
+        stroke="white"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 10 H28 V18 H16"
+        stroke="white"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <circle cx="16" cy="26" r="2.5" fill="white" />
       <circle cx="28" cy="26" r="2.5" fill="white" />
     </svg>
-    <Typography variant="h6" sx={{ fontWeight: 700, color: "white", fontSize: "1.1rem" }}>
+
+    <Typography
+      variant="h6"
+      sx={{ fontWeight: 700, color: "white", fontSize: "1.1rem" }}
+    >
       Nex<span style={{ fontWeight: 300 }}>Trade</span>
     </Typography>
   </Box>
@@ -47,21 +71,30 @@ const BuyerPage = () => {
   };
 
   const renderSection = () => {
-  switch (activeSection) {
-    case "profile":
-      return <BuyerProfile />;
-    case "branches":
-      return <BuyerWarehouses />;
-    case "help":
-      return (
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography color="text.secondary">Centro de ayuda próximamente.</Typography>
-        </Box>
-      );
-    default:
-      return <BuyerOrders />;
-  }
-};
+    switch (activeSection) {
+      case "profile":
+        return <BuyerProfile />;
+
+      case "sales":
+        return <BuyerProducts />;
+
+      case "branches":
+        return <BuyerWarehouses />;
+
+      case "help":
+        return (
+          <Box sx={{ textAlign: "center", py: 8 }}>
+            <Typography color="text.secondary">
+              Centro de ayuda próximamente.
+            </Typography>
+          </Box>
+        );
+
+      case "orders":
+      default:
+        return <BuyerOrders />;
+    }
+  };
 
   return (
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh" }}>

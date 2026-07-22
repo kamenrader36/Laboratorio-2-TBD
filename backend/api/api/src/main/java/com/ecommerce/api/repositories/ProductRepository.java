@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.ecommerce.api.entities.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -25,4 +26,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByUser_AuthUser_Username(String username);
 
     boolean existsBySkuProduct(Long skuProduct);
+
+    Optional<Product> findByIdProductAndUser_AuthUser_Username(Long idProduct, String username);
+
+    boolean existsBySkuProductAndIdProductNot(Long skuProduct, Long idProduct);
 }

@@ -14,4 +14,10 @@ public interface WarehouseProductRepository extends JpaRepository<WarehouseProdu
     boolean existsByWarehouse_IdWarehouse(Long idWarehouse);
     List<WarehouseProduct> findByWarehouse_IdWarehouseAndWarehouse_User_AuthUser_Username(Long idWarehouse, String username);
     Optional<WarehouseProduct> findByIdInventoryAndWarehouse_User_AuthUser_Username(Long idInventory, String username);
+
+    List<WarehouseProduct> findByProduct_IdProduct(Long idProduct);
+
+    List<WarehouseProduct> findByProduct_IdProductAndWarehouse_User_AuthUser_Username(Long idProduct, String username);
+
+    void deleteByProduct_IdProduct(Long idProduct);
 }
