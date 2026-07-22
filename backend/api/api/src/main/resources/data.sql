@@ -9,9 +9,9 @@ INSERT INTO roles (id_role, name_role) VALUES (2, 'USER')  ON CONFLICT (id_role)
 -- =====================
 -- Todos tienen clave: 12345678
 
-INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (1, 'jean.rojas', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'jean.rojas@mail.com', 1);
-INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (2, 'manuel.orellana', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'manuel.orellana@mail.com', 2);
-INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (3, 'luciano.carril', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'luciano.carril@mail.com', 2);
+INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (1, 'jean.rojas', '$2a$10$gph3TBtg2FDk1nc6fGAiCuToUfxoBo50kJbrhhWXbSqhIBM5twcvq', 'jean.rojas@mail.com', 1);
+INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (2, 'manuel.orellana', '$2a$10$gph3TBtg2FDk1nc6fGAiCuToUfxoBo50kJbrhhWXbSqhIBM5twcvq', 'manuel.orellana@mail.com', 2);
+INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES (3, 'luciano.carril', '$2a$10$gph3TBtg2FDk1nc6fGAiCuToUfxoBo50kJbrhhWXbSqhIBM5twcvq', 'luciano.carril@mail.com', 2);
 
 -- =====================
 -- COBERTURE AREA (Trigger de validación perimetral)
