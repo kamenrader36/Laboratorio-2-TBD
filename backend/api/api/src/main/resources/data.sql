@@ -65,14 +65,14 @@ INSERT INTO categories (id_category, category_name, category_description, is_haz
 -- =====================
 -- PRODUCTS (Catálogo Global)
 -- =====================
-INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price)
-VALUES (1, 1, 2, 1001, 'Martillo', 'Martillo de acero 500g', 8990);
+INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price, stock)
+VALUES (1, 1, 2, 1001, 'Martillo', 'Martillo de acero 500g', 8990, 1);
 
-INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price)
-VALUES (2, 2, 2, 2001, 'Escalera 3m', 'Escalera aluminio 3 metros', 29990);
+INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price, stock)
+VALUES (2, 2, 2, 2001, 'Escalera 3m', 'Escalera aluminio 3 metros', 29990, 1);
 
-INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price)
-VALUES (3, 3, 2, 3001, 'Acido', 'manipular con precaución', 15990);
+INSERT INTO products (id_product, id_category, id_user, sku_product, product_name, product_description, product_price, stock)
+VALUES (3, 3, 2, 3001, 'Acido', 'manipular con precaución', 15990, 1);
 -- =====================
 -- WAREHOUSE PRODUCTS 
 -- =====================

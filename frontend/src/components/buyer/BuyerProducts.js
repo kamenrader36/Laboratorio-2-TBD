@@ -383,7 +383,17 @@ const BuyerProducts = () => {
         </Alert>
       )}
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            xl: "1fr 1fr",
+          },
+          gap: 2,
+          alignItems: "stretch",
+        }}
+      >
         {products.length === 0 ? (
           <Paper
             elevation={0}
@@ -392,6 +402,7 @@ const BuyerProducts = () => {
               borderRadius: 2.5,
               p: 4,
               textAlign: "center",
+              gridColumn: "1 / -1",
             }}
           >
             <InventoryIcon sx={{ fontSize: 46, color: "#CBD5E1", mb: 1.5 }} />
@@ -404,12 +415,13 @@ const BuyerProducts = () => {
           </Paper>
         ) : (
           products.map((product) => (
-            <BuyerProductCard
-              key={product.idProduct}
-              product={product}
-              onEdit={openEditDialog}
-              onDelete={openDeleteDialog}
-            />
+            <Box key={product.idProduct} sx={{ height: "100%" }}>
+              <BuyerProductCard
+                product={product}
+                onEdit={openEditDialog}
+                onDelete={openDeleteDialog}
+              />
+            </Box>
           ))
         )}
       </Box>
