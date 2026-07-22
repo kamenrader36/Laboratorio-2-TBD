@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface WarehouseProductRepository extends JpaRepository<WarehouseProduct, Long> {
     Optional<WarehouseProduct> findByWarehouse_IdWarehouseAndProduct_IdProduct(Long idWarehouse, Long idProduct);
     List<WarehouseProduct> findByWarehouse_IdWarehouse(Long idWarehouse);
+    boolean existsByWarehouse_IdWarehouse(Long idWarehouse);
+    List<WarehouseProduct> findByWarehouse_IdWarehouseAndWarehouse_User_AuthUser_Username(Long idWarehouse, String username);
+    Optional<WarehouseProduct> findByIdInventoryAndWarehouse_User_AuthUser_Username(Long idInventory, String username);
 }

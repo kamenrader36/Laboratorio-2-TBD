@@ -5,6 +5,7 @@ import com.ecommerce.api.dto.WarehouseResponseDTO;
 import com.ecommerce.api.entities.Users;
 import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.UsersRepository;
+import com.ecommerce.api.repositories.WarehouseProductRepository;
 import com.ecommerce.api.repositories.WarehouseRepository;
 import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
@@ -24,6 +25,9 @@ public class WarehouseService {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private WarehouseProductRepository warehouseProductRepository;
 
     public String createWarehouse(WarehouseDTO warehouseDTO, String currentUsername) {
         Users owner = usersRepository.findByAuthUser_Username(currentUsername);
@@ -57,5 +61,37 @@ public class WarehouseService {
                         w.getLocation() != null ? w.getLocation().getX() : null
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public String updateWarehouse(Long idWarehouse, WarehouseDTO warehouseDTO, String currentUsername) {
+        Warehouse warehouse = warehouseRepository.findByIdWarehouseAndUser_AuthUser_Username(idWarehouse, currentUsername)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada o sin permisos"));
+
+        warehouse.setName(warehouseDTO.getName());
+        warehouse.setAddress(warehouseDTO.getAddress());
+
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Coordinate coordinate = new Coordinate(warehouseDTO.getLongitude(), warehouseDTO.getLatitude());
+        Point location = geometryFactory.createPoint(coordinate);
+
+        warehouse.setLocation(location);
+        warehouseRepository.save(warehouse);
+
+        return "Sucursal actualizada correctamente";
+    }
+
+    @Transactional
+    public String deleteWarehouse(Long idWarehouse, String currentUsername) {
+        Warehouse warehouse = warehouseRepository.findByIdWarehouseAndUser_AuthUser_Username(idWarehouse, currentUsername)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada o sin permisos"));
+
+        boolean hasProducts = warehouseProductRepository.existsByWarehouse_IdWarehouse(idWarehouse);
+        if (hasProducts) {
+            throw new RuntimeException("No se puede eliminar la sucursal porque tiene productos asociados");
+        }
+
+        warehouseRepository.delete(warehouse);
+        return "Sucursal eliminada correctamente";
     }
 }

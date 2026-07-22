@@ -19,16 +19,26 @@ import {
   BusinessOutlined as BusinessIcon,
 } from "@mui/icons-material";
 import LogoutDialog from "../LogoutDialog";
+import { useAuth } from "../../context/AuthContext";
+import LoyaltyOutlinedIcon from '@mui/icons-material/LoyaltyOutlined';
 
 const menuItems = [
   { key: "orders", label: "Mis compras", icon: <OrdersIcon /> },
   { key: "profile", label: "Perfil", icon: <ProfileIcon /> },
+  { key: "sales", label: "Mis produtos", icon: <LoyaltyOutlinedIcon/>},
   { key: "branches", label: "Sucursales", icon: <StoreIcon /> },
   { key: "help", label: "Ayuda", icon: <HelpIcon /> },
 ];
 
 const BuyerSidebar = ({ activeSection, onSelect, onLogout }) => {
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const { user } = useAuth();
+
+  const displayName =
+    user?.name ||
+    user?.username ||
+    user?.email ||
+    "Usuario";
 
   const itemTextSlotProps = {
     primary: {
@@ -83,10 +93,7 @@ const BuyerSidebar = ({ activeSection, onSelect, onLogout }) => {
 
           <Box>
             <Typography fontWeight={700} fontSize="0.95rem" color="#111827">
-              Mi tienda
-            </Typography>
-            <Typography fontSize="0.78rem" color="text.secondary">
-              Panel de comprador B2B
+              {displayName}
             </Typography>
           </Box>
         </Box>

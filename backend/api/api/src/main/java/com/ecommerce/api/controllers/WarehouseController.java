@@ -30,4 +30,25 @@ public class WarehouseController {
         List<WarehouseResponseDTO> myWarehouses = warehouseService.getMyWarehouses(currentUsername);
         return ResponseEntity.ok(myWarehouses);
     }
+
+    @PutMapping("/{idWarehouse}")
+    public ResponseEntity<?> updateWarehouse(
+            @PathVariable Long idWarehouse,
+            @RequestBody WarehouseDTO warehouse,
+            Authentication authentication
+    ) {
+        String currentUsername = authentication.getName();
+        String response = warehouseService.updateWarehouse(idWarehouse, warehouse, currentUsername);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{idWarehouse}")
+    public ResponseEntity<?> deleteWarehouse(
+            @PathVariable Long idWarehouse,
+            Authentication authentication
+    ) {
+        String currentUsername = authentication.getName();
+        String response = warehouseService.deleteWarehouse(idWarehouse, currentUsername);
+        return ResponseEntity.ok(response);
+    }
 }

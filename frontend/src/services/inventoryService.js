@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8090/api/store";
+const API_URL = "http://localhost:8090/api/inventory";
 
 const extractErrorMessage = (text, fallback) => {
   if (!text) return fallback;
@@ -26,8 +26,8 @@ const extractErrorMessage = (text, fallback) => {
   return fallback;
 };
 
-export const getMyWarehouses = async (token) => {
-  const response = await fetch(`${API_URL}/my-warehouses`, {
+export const getInventoryByWarehouse = async (idWarehouse, token) => {
+  const response = await fetch(`${API_URL}/warehouse/${idWarehouse}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -38,36 +38,15 @@ export const getMyWarehouses = async (token) => {
 
   if (!response.ok) {
     throw new Error(
-      extractErrorMessage(text, "No se pudieron cargar las sucursales.")
+      extractErrorMessage(text, "No se pudo cargar el inventario de la sucursal.")
     );
   }
 
   return text ? JSON.parse(text) : [];
 };
 
-export const createWarehouse = async (payload, token) => {
-  const response = await fetch(`${API_URL}/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const text = await response.text();
-
-  if (!response.ok) {
-    throw new Error(
-      extractErrorMessage(text, "No se pudo registrar la sucursal.")
-    );
-  }
-
-  return text;
-};
-
-export const updateWarehouse = async (idWarehouse, payload, token) => {
-  const response = await fetch(`${API_URL}/${idWarehouse}`, {
+export const updateWarehouseInventory = async (idInventory, payload, token) => {
+  const response = await fetch(`${API_URL}/${idInventory}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -80,15 +59,15 @@ export const updateWarehouse = async (idWarehouse, payload, token) => {
 
   if (!response.ok) {
     throw new Error(
-      extractErrorMessage(text, "No se pudo actualizar la sucursal.")
+      extractErrorMessage(text, "No se pudo actualizar la cantidad del producto.")
     );
   }
 
   return text;
 };
 
-export const deleteWarehouse = async (idWarehouse, token) => {
-  const response = await fetch(`${API_URL}/${idWarehouse}`, {
+export const deleteWarehouseInventory = async (idInventory, token) => {
+  const response = await fetch(`${API_URL}/${idInventory}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -99,7 +78,7 @@ export const deleteWarehouse = async (idWarehouse, token) => {
 
   if (!response.ok) {
     throw new Error(
-      extractErrorMessage(text, "No se pudo eliminar la sucursal.")
+      extractErrorMessage(text, "No se pudo eliminar el producto de la sucursal.")
     );
   }
 

@@ -1,7 +1,6 @@
 package com.ecommerce.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProduct;
@@ -37,7 +37,7 @@ public class Product {
     private Long skuProduct;
 
     @Column(nullable = true)
-    private double stock;
+    private Double stock;
 
     @ManyToOne
     @JoinColumn(name = "id_category")
