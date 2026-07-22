@@ -5,12 +5,15 @@ import com.ecommerce.api.entities.Users;
 import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.UsersRepository;
 import com.ecommerce.api.repositories.WarehouseRepository;
+import jakarta.transaction.Transactional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WarehouseService {
@@ -36,5 +39,9 @@ public class WarehouseService {
         warehouseRepository.save(warehouse);
 
         return "Tienda registrada correctamente";
+    }
+    @Transactional()
+    public List<Warehouse> getMyWarehouses(String currentUsername) {
+        return warehouseRepository.findByUser_AuthUser_Username(currentUsername);
     }
 }

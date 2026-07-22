@@ -12,13 +12,11 @@ import {
   HomeWorkOutlinedIcon as HomeworkIcon,
 } from "@mui/icons-material";
 import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
-import PointOfSaleOutlinedIcon from '@mui/icons-material/PointOfSaleOutlined';
 import LogoutDialog from "../LogoutDialog";
 import { useAuth } from "../../context/AuthContext";
 
 const MENU_ITEMS = [
   { key: "orders",  label: "Mis compras", icon: <OrdersIcon /> },
-  { key: "sales",   label: "Mis ventas",  icon: <PointOfSaleOutlinedIcon /> },
   { key: "profile", label: "Mi perfil",   icon: <PersonIcon /> },
   { key: "branches",label: "Sucursales",  icon: <HomeWorkOutlinedIcon /> },
   { key: "help",    label: "Ayuda",       icon: <HelpIcon /> },

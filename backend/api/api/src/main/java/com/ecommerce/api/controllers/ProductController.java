@@ -5,6 +5,7 @@ import java.util.List;
 import com.ecommerce.api.dto.DiscountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.ecommerce.api.dto.ProductDTO;
@@ -29,12 +30,12 @@ public class ProductController {
     }
 
     @PostMapping("/publish")
-    public ResponseEntity<?> publishAProduct(@RequestBody ProductDTO productToPublish){
-        
-        String response = productService.publishProduct(productToPublish);
-        
+    public ResponseEntity<?> publishAProduct(@RequestBody ProductDTO productToPublish, Authentication authentication){
+        String currentUsername = authentication.getName();
+        String response = productService.publishProduct(productToPublish, currentUsername);
+
         if(response.contains("Error")){
-            return ResponseEntity.badRequest().body(response); 
+            return ResponseEntity.badRequest().body(response);
         }
         return ResponseEntity.ok(response);
     }

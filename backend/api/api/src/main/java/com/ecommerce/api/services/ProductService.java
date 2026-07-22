@@ -1,5 +1,7 @@
 package com.ecommerce.api.services;
 
+import com.ecommerce.api.repositories.UsersRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,34 +15,28 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private UsersRepository usersRepository;
 
     public ProductService(ProductRepository product){
         this.productRepository = product;
     }
 
-    public String publishProduct(ProductDTO productToPublish){
-        
+    @Transactional
+    public String publishProduct(ProductDTO productToPublish, String currentUsername){
+
         if(productToPublish.getProductPrice() <= 0){
             return "Error: El precio de publicacion debe ser mayor a 0";
         }
-
-        if(productToPublish.getId_user() == null){
-            return "Error: El producto debe estar asociado a un usuario";
-        }
-        
+        Users owner = usersRepository.findByAuthUser_Username(currentUsername);
         Product product = new Product();
         product.setProductName(productToPublish.getProductName());
         product.setProductDescription(productToPublish.getProductDescription());
         product.setProductPrice(productToPublish.getProductPrice());
         product.setSkuProduct(productToPublish.getSkuProduct());
         product.setStock(productToPublish.getStock());
-
-        Users user = new Users();
-        user.setIdUser(productToPublish.getId_user());
-        product.setUser(user);
-        
+        product.setUser(owner);
         productRepository.save(product);
-        
         return "Producto publicado";
     }
     public void applyCategoryDiscount(Long categoryId, int percentage) {

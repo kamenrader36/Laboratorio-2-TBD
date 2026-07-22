@@ -5,14 +5,12 @@ import com.ecommerce.api.dto.LoginDTO;
 import com.ecommerce.api.dto.ProfileDTO;
 import com.ecommerce.api.dto.RegisterDTO;
 import com.ecommerce.api.entities.AuthUser;
+import com.ecommerce.api.entities.Role;
 import com.ecommerce.api.entities.Users;
 import com.ecommerce.api.entities.Warehouse;
 import com.ecommerce.api.repositories.AuthUserRepository;
+import com.ecommerce.api.repositories.RoleRepository;
 import com.ecommerce.api.repositories.UsersRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.ecommerce.api.repositories.WarehouseRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -23,44 +21,63 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AuthUserServices {
+
     @Autowired
     private AuthUserRepository authUserRepository;
+
     @Autowired
     private UsersRepository userRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private WarehouseRepository warehouseRepository;
+
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Transactional
-    public String createUser(RegisterDTO user){
+    public String createUser(RegisterDTO user) {
         if (user.getPassword().length() < 8) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres");
         }
+
         if (!user.getEmail().contains("@") || !user.getEmail().contains(".")) {
             throw new IllegalArgumentException("El formato del correo no es válido");
         }
+
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             throw new RuntimeException("Las contraseñas deben ser iguales");
         }
-        if(authUserRepository.existsByEmail(user.getEmail())){
+
+        if (authUserRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Este email ya esta registrado");
         }
-        if(authUserRepository.existsByUsername(user.getUsername())){
+
+        if (authUserRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Este username ya esta registrado");
         }
-        
+
+        Role defaultRole = roleRepository.findByNameRole("USER")
+                .orElseThrow(() -> new RuntimeException("El rol USER no existe en la base de datos"));
+
         String hashedPassword = passwordEncoder.encode(user.getPassword());
-        
+
         AuthUser authUser = new AuthUser();
         authUser.setUsername(user.getUsername());
         authUser.setPassword(hashedPassword);
         authUser.setEmail(user.getEmail());
-        
+        authUser.setRole(defaultRole);
+
         AuthUser savedAuth = authUserRepository.save(authUser);
 
         Users newUser = new Users();
@@ -76,6 +93,7 @@ public class AuthUserServices {
         newUser.setLocation(userLocation);
 
         Users savedUser = userRepository.save(newUser);
+
         Warehouse initialWarehouse = new Warehouse();
         String warehouseName = savedUser.getName() + " - Casa Matriz";
         initialWarehouse.setName(warehouseName);
@@ -83,6 +101,7 @@ public class AuthUserServices {
         initialWarehouse.setLocation(userLocation);
         initialWarehouse.setUser(savedUser);
         warehouseRepository.save(initialWarehouse);
+
         return "Usuario registrado con exito";
     }
 
@@ -101,17 +120,16 @@ public class AuthUserServices {
     }
 
     public List<ProfileDTO> getAllProfiles() {
-    
         List<Users> users = userRepository.findAll();
 
         return users.stream().map(u -> new ProfileDTO(
-            u.getIdUser(),
-            u.getAuthUser().getUsername(),
-            u.getAuthUser().getEmail(),
-            u.getName(),
-            u.getRut(),
-            u.getAddress(),
-            u.getPhone()
+                u.getIdUser(),
+                u.getAuthUser().getUsername(),
+                u.getAuthUser().getEmail(),
+                u.getName(),
+                u.getRut(),
+                u.getAddress(),
+                u.getPhone()
         )).collect(Collectors.toList());
     }
 }

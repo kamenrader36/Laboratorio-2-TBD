@@ -12,17 +12,6 @@ const decodeJwt = (token) => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // --- MOCK TEMPORAL MIENTRAS NO HAY BACKEND ---
-  const [token, setToken] = useState("fake-token"); // antes: localStorage.getItem("token")
-  const [user, setUser] = useState({
-    username: "buyer_test",
-    email: "buyer@test.com",
-    role: "BUYER",
-    id_user: 1,
-    id_auth: 1,
-  });
-
-  /* --- LÓGICA REAL, DESCOMENTAR CUANDO EL BACKEND ESTÉ LISTO ---
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser]   = useState(null);
 
@@ -40,9 +29,10 @@ export const AuthProvider = ({ children }) => {
       } else {
         logout();
       }
+    } else {
+      setUser(null);
     }
   }, [token]);
-  */
 
   const login = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
