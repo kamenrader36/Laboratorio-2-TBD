@@ -1,6 +1,9 @@
 package com.ecommerce.api.services;
 
 import java.util.Optional;
+
+import com.ecommerce.api.repositories.UsersRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,29 +28,33 @@ public class ShoppingCartServices {
     @Autowired
     private ProductRepository productRepository;
 
-    public String addProductToCart(CartPurchaseDTO purchase){
-        
+    @Autowired
+    private UsersRepository userRepository;
+
+    @Transactional
+    public String addProductToCart(CartPurchaseDTO purchase) {
+
         Optional<Product> product = productRepository.findById(purchase.getId_product());
 
-        if(product.isEmpty()){
+        if (product.isEmpty()) {
             return "Error: Producto no encontrado";
         }
 
         Product realProduct = product.get();
 
-        if(realProduct.getStock() < purchase.getQuantity()){
+        if (realProduct.getStock() < purchase.getQuantity()) {
             return "Error: no hay stock suficiente";
         }
 
         Optional<ShoppingCart> cart = shoppingCartRepository.findByUser_IdUser(purchase.getId_user());
         ShoppingCart shoppingCart;
-        
-        if(cart.isPresent()){
+
+        if (cart.isPresent()) {
             shoppingCart = cart.get();
         } else {
             shoppingCart = new ShoppingCart();
-            Users user = new Users();
-            user.setIdUser(purchase.getId_user());
+            // 2. CORRECCIÓN: Obtenemos la referencia gestionada por Hibernate
+            Users user = userRepository.getReferenceById(purchase.getId_user());
             shoppingCart.setUser(user);
             shoppingCart = shoppingCartRepository.save(shoppingCart);
         }
@@ -56,7 +63,7 @@ public class ShoppingCartServices {
         cartDetail.setShoppingCart(shoppingCart);
         cartDetail.setProduct(realProduct);
         cartDetail.setQuantity(purchase.getQuantity());
-        
+
         cartDetailRepository.save(cartDetail);
         return "Producto agregado al carrito con exito";
     }

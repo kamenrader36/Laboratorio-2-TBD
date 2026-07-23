@@ -4,14 +4,8 @@ import com.ecommerce.api.config.JwtUtils;
 import com.ecommerce.api.dto.LoginDTO;
 import com.ecommerce.api.dto.ProfileDTO;
 import com.ecommerce.api.dto.RegisterDTO;
-import com.ecommerce.api.entities.AuthUser;
-import com.ecommerce.api.entities.Role;
-import com.ecommerce.api.entities.Users;
-import com.ecommerce.api.entities.Warehouse;
-import com.ecommerce.api.repositories.AuthUserRepository;
-import com.ecommerce.api.repositories.RoleRepository;
-import com.ecommerce.api.repositories.UsersRepository;
-import com.ecommerce.api.repositories.WarehouseRepository;
+import com.ecommerce.api.entities.*;
+import com.ecommerce.api.repositories.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -29,6 +23,9 @@ public class AuthUserServices {
 
     @Autowired
     private AuthUserRepository authUserRepository;
+
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
     private UsersRepository userRepository;
@@ -101,6 +98,10 @@ public class AuthUserServices {
         initialWarehouse.setLocation(userLocation);
         initialWarehouse.setUser(savedUser);
         warehouseRepository.save(initialWarehouse);
+
+        ShoppingCart initialCart = new ShoppingCart();
+        initialCart.setUser(savedUser);
+        shoppingCartRepository.save(initialCart);
 
         return "Usuario registrado con exito";
     }
