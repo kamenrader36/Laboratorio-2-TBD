@@ -25,24 +25,24 @@ INSERT INTO roles (id_role, name_role) VALUES (2, 'USER')  ON CONFLICT (id_role)
 -- 2. AUTH USERS
 -- =====================
 INSERT INTO auth_user (id_auth, username, password, email, id_role) VALUES
-                                                                        (1, 'jean.rojas', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'jean.rojas@mail.com', 1),
-                                                                        (2, 'manuel.orellana', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'manuel.orellana@mail.com', 2),
-                                                                        (3, 'luciano.carril', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'luciano.carril@mail.com', 2);
+                                                                        (1, 'admin', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'admin@mail.com', 1),
+                                                                        (2, 'liderAdmin', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'lider.admin@mail.com', 2),
+                                                                        (3, 'sodimacAdmin', '$2a$12$t9i6h/nyBBuqEYLGyVbf2en17FPrnpDtYT5MChGXie0ct85s9BcrO', 'sodimac.admin@mail.com', 2);
 
 -- =====================
 -- 3. USERS
 -- =====================
--- Jean Rojas (Santiago Centro)
+-- Admin (Santiago Centro)
 INSERT INTO users (id_user, name, rut, address, location, phone, id_auth)
-VALUES (1, 'Jean Rojas', '12345678-1', 'Calle Falsa 123', ST_SetSRID(ST_MakePoint(-70.6506, -33.4372), 4326), '23242442', 1);
+VALUES (1, 'Admin', '12345678-1', 'Calle Falsa 123', ST_SetSRID(ST_MakePoint(-70.6506, -33.4372), 4326), '23242442', 1);
 
--- Manuel Orellana (Ubicado LEJOS en Melipilla: -71.2166, -33.6850)
+-- Lider ADmin (Ubicado LEJOS en Melipilla: -71.2166, -33.6850)
 INSERT INTO users (id_user, name, rut, address, location, phone, id_auth)
-VALUES (2, 'Manuel Orellana', '98765432-2', 'Av. Mackenna 1200', ST_SetSRID(ST_MakePoint(-71.2166, -33.6850), 4326), '99887766', 2);
+VALUES (2, 'Lider', '98765432-2', 'Av. Mackenna 1200', ST_SetSRID(ST_MakePoint(-71.2166, -33.6850), 4326), '99887766', 2);
 
--- Luciano Carril (San Miguel)
+-- Sodimac Admin (San Miguel)
 INSERT INTO users (id_user, name, rut, address, location, phone, id_auth)
-VALUES (3, 'Luciano Carril', '11223344-3', 'Gran Avenida 5000', ST_SetSRID(ST_MakePoint(-70.6828, -33.4533), 4326), '88776655', 3);
+VALUES (3, 'Sodimac', '11223344-3', 'Gran Avenida 5000', ST_SetSRID(ST_MakePoint(-70.6828, -33.4533), 4326), '88776655', 3);
 
 -- =====================
 -- 4. COBERTURE AREA (Gran Santiago)
@@ -101,11 +101,6 @@ INSERT INTO warehouse_products (id_warehouse, id_product, quantity) VALUES
                                                                         (1, 7, 40),
                                                                         (1, 8, 30);
 
--- =====================
--- 9. CARRITO PRECARGADO INICIAL (Manuel en Melipilla)
--- =====================
--- INSERT INTO shopping_cart (id_shopping_cart, id_user) VALUES (1, 2);
--- INSERT INTO cart_detail (id_shopping_cart, id_product, quantity) VALUES (1, 1, 1); -- 1 Martillo
 
 -- ============================================================
 -- REAJUSTE GLOBAL DE SECUENCIAS
@@ -120,7 +115,6 @@ SELECT setval(pg_get_serial_sequence('shopping_cart', 'id_shopping_cart'), (SELE
 
 /*
 
--- 1. Acercar a Manuel (id_user = 2) a Santiago Centro
 UPDATE users
 SET location = ST_SetSRID(ST_MakePoint(-70.6510, -33.4405), 4326),
     address = 'Av. Alameda 3400'
