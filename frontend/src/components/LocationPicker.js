@@ -4,7 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Box, Typography } from '@mui/material';
 
-// Solución al problema común de Leaflet en React donde los iconos por defecto no cargan la ruta de la imagen
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -16,14 +15,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Componente auxiliar interno para capturar los clics en el mapa
 const LocationMarker = ({ marker, setMarker, onUpdateLocation }) => {
   useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng;
       setMarker([lat, lng]);
       
-      // Notificamos al componente padre (RegisterPage)
       if (onUpdateLocation) {
         onUpdateLocation({ lat, lng });
       }
@@ -35,7 +32,7 @@ const LocationMarker = ({ marker, setMarker, onUpdateLocation }) => {
 
 const LocationP = ({ onUpdateLocation }) => {
   const [marker, setMarker] = useState(null);
-  const center = [-33.4489, -70.6693]; // Coordenadas iniciales (Santiago)
+  const center = [-33.4489, -70.6693];
   const zoom = 13;
 
   return (
@@ -51,7 +48,6 @@ const LocationP = ({ onUpdateLocation }) => {
           borderRadius: 2,
           overflow: "hidden",
           border: "1px solid #ccc",
-          // Regla importante para evitar conflictos de z-index con modales o headers de MUI
           zIndex: 0, 
           position: "relative"
         }}

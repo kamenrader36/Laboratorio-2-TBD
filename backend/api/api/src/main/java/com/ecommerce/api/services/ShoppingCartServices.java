@@ -53,7 +53,6 @@ public class ShoppingCartServices {
             shoppingCart = cart.get();
         } else {
             shoppingCart = new ShoppingCart();
-            // 2. CORRECCIÓN: Obtenemos la referencia gestionada por Hibernate
             Users user = userRepository.getReferenceById(purchase.getId_user());
             shoppingCart.setUser(user);
             shoppingCart = shoppingCartRepository.save(shoppingCart);

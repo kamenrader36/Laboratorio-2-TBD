@@ -1,18 +1,18 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 TRUNCATE TABLE
-    cart_detail, 
-    shopping_cart, 
+    cart_detail,
+    shopping_cart,
     warehouse_products,
     detail_payment,
     payments,
-    products, 
-    categories, 
-    users, 
-    warehouse, 
-    coberture_area, 
-    auth_user, 
-    roles 
+    products,
+    categories,
+    users,
+    warehouse,
+    coberture_area,
+    auth_user,
+    roles
 RESTART IDENTITY CASCADE;
 
 -- =====================
@@ -104,8 +104,8 @@ INSERT INTO warehouse_products (id_warehouse, id_product, quantity) VALUES
 -- =====================
 -- 9. CARRITO PRECARGADO INICIAL (Manuel en Melipilla)
 -- =====================
-INSERT INTO shopping_cart (id_shopping_cart, id_user) VALUES (1, 2);
-INSERT INTO cart_detail (id_shopping_cart, id_product, quantity) VALUES (1, 1, 1); -- 1 Martillo
+-- INSERT INTO shopping_cart (id_shopping_cart, id_user) VALUES (1, 2);
+-- INSERT INTO cart_detail (id_shopping_cart, id_product, quantity) VALUES (1, 1, 1); -- 1 Martillo
 
 -- ============================================================
 -- REAJUSTE GLOBAL DE SECUENCIAS
@@ -118,32 +118,14 @@ SELECT setval(pg_get_serial_sequence('categories', 'id_category'), (SELECT COALE
 SELECT setval(pg_get_serial_sequence('shopping_cart', 'id_shopping_cart'), (SELECT COALESCE(MAX(id_shopping_cart), 1) FROM shopping_cart), true);
 
 
-/* 
-===================================================================
-  PASO MANUAL DE PRUEBA: ACERCAR A MANUEL Y CARGAR 1 MARTILLO
-  (Descomentar y ejecutar en la BD cuando se quiera simular la compra exitosa)
-===================================================================
+/*
 
 -- 1. Acercar a Manuel (id_user = 2) a Santiago Centro
-UPDATE users 
+UPDATE users
 SET location = ST_SetSRID(ST_MakePoint(-70.6510, -33.4405), 4326),
     address = 'Av. Alameda 3400'
 WHERE id_user = 2;
 
--- 2. Asegurar carrito activo para Manuel
-INSERT INTO shopping_cart (id_user) 
-VALUES (2) 
-ON CONFLICT (id_user) DO NOTHING;
-
--- 3. Dejar solo 1 Martillo en el carrito
-DELETE FROM cart_detail 
-WHERE id_shopping_cart = (SELECT id_shopping_cart FROM shopping_cart WHERE id_user = 2);
-
-INSERT INTO cart_detail (id_shopping_cart, id_product, quantity)
-VALUES (
-    (SELECT id_shopping_cart FROM shopping_cart WHERE id_user = 2),
-    1,
-    1
-);
+SELECT * FROM warehouse_products
 
 */

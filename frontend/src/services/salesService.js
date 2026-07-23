@@ -32,12 +32,11 @@ export const cancelOrder = async (idPayment, token) => {
         });
 
         if (!response.ok) {
-            // Si el backend responde con error (ej: 403 o 400), lanzamos el mensaje
             const errorText = await response.text();
             throw new Error(errorText || "No se pudo cancelar el pedido");
         }
 
-        return await response.text(); // O response.json() si tu backend devuelve un objeto
+        return await response.text();
     } catch (error) {
         throw error;
     }

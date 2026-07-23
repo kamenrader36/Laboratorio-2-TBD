@@ -28,7 +28,7 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
     if (cartItems.length === 0 || loading) return;
 
     setLoading(true);
-    setErrorMessage(""); // Limpiar errores previos
+    setErrorMessage("");
 
     try {
       const tokenActual = localStorage.getItem("token") || token;
@@ -55,11 +55,9 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
         }, 3000);
 
       } else {
-        // Intentar leer la respuesta como JSON o texto
         const errorData = await response.json().catch(() => null);
         let rawMessage = errorData?.message || await response.text() || "No se pudo procesar la compra";
 
-        // Limpiar el mensaje si viene con formato de PostgreSQL/PLpgSQL
         let cleanMessage = rawMessage.split("\n")[0].replace("ERROR: ", "").trim();
 
         setErrorMessage(cleanMessage);
@@ -80,7 +78,6 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
         sx: { width: { xs: "100vw", sm: 400 }, display: "flex", flexDirection: "column" },
       }}
     >
-      {/* Header */}
       <Box sx={{ px: 2.5, py: 2, bgcolor: "#1565C0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <CartIcon sx={{ color: "white", fontSize: 22 }} />
@@ -90,8 +87,6 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
         </Box>
         <IconButton onClick={onClose} sx={{ color: "white" }}><CloseIcon /></IconButton>
       </Box>
-
-      {/* Pantalla de éxito post-compra */}
       {showSuccess ? (
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", p: 4, textAlign: "center" }}>
           <SuccessIcon sx={{ fontSize: 80, color: "#2E7D32", mb: 2 }} />
@@ -110,7 +105,6 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
         </Box>
       ) : (
         <>
-          {/* Lista de productos */}
           <Box sx={{ flex: 1, overflowY: "auto", px: 2, py: 2 }}>
             {cartItems.length === 0 ? (
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", py: 8, gap: 2 }}>
@@ -148,11 +142,9 @@ const CartDrawer = ({ open, onClose, fetchProducts }) => {
             )}
           </Box>
 
-          {/* Footer con Método de Pago y Botón de Pago Directo */}
           {cartItems.length > 0 && (
             <Box sx={{ p: 2.5, bgcolor: "#F8FAFC", borderTop: "1px solid #E3E8F0" }}>
 
-              {/* 🔴 ALERTA DE ERROR */}
               {errorMessage && (
                 <Alert 
                   severity="error" 

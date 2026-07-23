@@ -25,19 +25,17 @@ const ProductCard = ({ product }) => {
     setLoading(true);
     setErrorMessage("");
 
-    // 1. Extraemos y validamos el ID usando la propiedad correcta (id_user)
     const userId = user?.id_user || user?.idUser || user?.id;
 
     if (!userId) {
       setErrorMessage("Debes iniciar sesión para agregar productos al carrito.");
       setLoading(false);
-      return; // Cortamos la ejecución aquí si no hay ID
+      return;
     }
 
     try {
       const tokenActual = localStorage.getItem("token") || token;
 
-      // 2. Llamada al backend
       const response = await fetch("http://localhost:8090/api/cart/add", {
         method: "POST",
         headers: {
@@ -46,18 +44,17 @@ const ProductCard = ({ product }) => {
         },
         body: JSON.stringify({
           id_product: product.idProduct || product.id,
-          id_user: userId, // <-- Usamos la variable que ya capturó el id_user correctamente
+          id_user: userId,
           quantity: product.minOrder || 1
         })
       });
 
       if (response.ok) {
-        // 3. Si la DB acepta la inserción, actualizamos el Contexto Local
+
         addToCart(product);
         setAdded(true);
         setTimeout(() => setAdded(false), 1500);
       } else {
-        // 4. Capturamos errores de la API o Triggers de Postgres
         const rawText = await response.text();
         let cleanMessage = rawText.split("\n")[0].replace("ERROR: ", "").trim();
         setErrorMessage(cleanMessage || "No se pudo agregar el producto al carrito.");
@@ -135,7 +132,6 @@ const ProductCard = ({ product }) => {
         </CardActions>
       </Card>
 
-      {/* Alerta flotante para Notificar Errores al Usuario */}
       <Snackbar 
         open={Boolean(errorMessage)} 
         autoHideDuration={6000} 

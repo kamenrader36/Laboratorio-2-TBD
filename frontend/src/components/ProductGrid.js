@@ -12,10 +12,8 @@ const ProductGrid = ({ selectedCategoryId }) => {
     setLoading(true);
     setError(null);
 
-    // Construimos la URL base
     let url = "http://localhost:8090/api/products";
     
-    // Si viene una categoría seleccionada desde el padre/sidebar
     if (selectedCategoryId) {
       url += `?id_category=${selectedCategoryId}`;
     }
@@ -28,11 +26,9 @@ const ProductGrid = ({ selectedCategoryId }) => {
         return res.json();
       })
       .then((data) => {
-        // Mapeamos alineando los atributos en camelCase de la entidad JPA
         const mappedProducts = data.map((prod) => ({
-          ...prod, // Preservamos los atributos originales
+          ...prod,
 
-          // Sobrescribimos/Mapeamos con las claves esperadas por ProductCard
           id: prod.idProduct,
           name: prod.productName,
           description: prod.productDescription,
@@ -82,28 +78,24 @@ const ProductGrid = ({ selectedCategoryId }) => {
 
       <Divider sx={{ mb: 2.5, borderColor: "#E3E8F0" }} />
 
-      {/* Indicador de Carga */}
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {/* Mensaje de Error */}
       {error && (
         <Typography color="error" textAlign="center" sx={{ py: 3 }}>
           No se pudieron cargar los productos. Asegúrate de que el Backend esté corriendo en el puerto 8090.
         </Typography>
       )}
 
-      {/* Mensaje sin productos */}
       {!loading && !error && products.length === 0 && (
         <Typography textAlign="center" sx={{ py: 3, color: "text.secondary" }}>
           No se encontraron productos disponibles para esta categoría.
         </Typography>
       )}
 
-      {/* Grid de Productos */}
       {!loading && !error && products.length > 0 && (
         <Box
           sx={{
